@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rewise Studio — Кошторис</title>
+<link href="https://fonts.googleapis.com/css2?family=Tenor+Sans&family=Commissioner:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --dark:    #1E1E1E;
+    --cognac:  #A0845C;
+    --linen:   #F0EBE3;
+    --brown:   #3A3228;
+    --leather: #6B4F3A;
+    --cognac-light: rgba(160,132,92,0.12);
+    --cognac-border: rgba(160,132,92,0.3);
+  }
+
+  body {
+    background: var(--dark);
+    color: var(--linen);
+    font-family: 'Commissioner', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    gap: 0;
+  }
+
+  .panel-left {
+    width: 420px;
+    min-width: 420px;
+    background: #161616;
+    border-right: 1px solid rgba(160,132,92,0.2);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow: hidden;
+  }
+
+  .logo { padding: 28px 32px 24px; border-bottom: 1px solid rgba(160,132,92,0.15); flex-shrink: 0; text-align: center; }
+  .logo-text { font-family: 'Tenor Sans', serif; font-size: 13px; letter-spacing: 0.25em; color: var(--cognac); text-transform: uppercase; }
+  .logo-sub { font-size: 11px; color: rgba(240,235,227,0.35); letter-spacing: 0.12em; margin-top: 3px; }
+
+  .client-block { padding: 24px 32px; border-bottom: 1px solid rgba(160,132,92,0.12); flex-shrink: 0; }
+  .block-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cognac); margin-bottom: 14px; }
+
+  .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .field { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 10px; color: rgba(240,235,227,0.4); letter-spacing: 0.1em; }
+  .field input, .field select {
+    background: rgba(240,235,227,0.05);
+    border: 1px solid rgba(160,132,92,0.2);
+    border-radius: 4px;
+    padding: 8px 10px;
+    color: var(--linen);
+    font-family: 'Commissioner', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--cognac); }
+  .field select option { background: #1E1E1E; color: var(--linen); }
+  .field input::placeholder { color: rgba(240,235,227,0.25); }
+
+  .items-scroll { flex: 0 1 auto; overflow-y: auto; padding: 20px 32px 8px; scrollbar-width: thin; scrollbar-color: var(--cognac-border) transparent; }
+
+  .item-card { background: var(--cognac-light); border: 1px solid var(--cognac-border); border-radius: 6px; padding: 16px; margin-bottom: 12px; }
+  .item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .item-num { font-family: 'Tenor Sans', serif; font-size: 11px; color: var(--cognac); letter-spacing: 0.15em; }
+  .item-remove { background: none; border: none; color: rgba(240,235,227,0.3); cursor: pointer; font-size: 16px; padding: 0; line-height: 1; transition: color 0.2s; }
+  .item-remove:hover { color: #c0735a; }
+
+  .item-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .item-row .field select { font-size: 12px; }
+  .item-row .field select option { background: #1E1E1E; color: var(--linen); }
+
+  .item-note {
+    margin-bottom: 8px;
+  }
+  .item-note input {
+    background: rgba(240,235,227,0.05);
+    border: 1px solid rgba(160,132,92,0.2);
+    border-radius: 4px;
+    padding: 8px 10px;
+    color: var(--linen);
+    font-family: 'Commissioner', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+  .item-note input:focus { border-color: var(--cognac); }
+  .item-note input::placeholder { color: rgba(240,235,227,0.25); }
+
+  .services-list { margin-top: 4px; }
+  .service-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(160,132,92,0.1); }
+  .service-row:last-child { border-bottom: none; }
+  .service-name { flex: 1; font-size: 12px; color: var(--linen); }
+  .service-price { font-size: 12px; color: var(--cognac); white-space: nowrap; min-width: 70px; text-align: right; }
+  .service-del { background: none; border: none; color: rgba(240,235,227,0.2); cursor: pointer; font-size: 14px; padding: 0; transition: color 0.2s; }
+  .service-del:hover { color: #c0735a; }
+
+  .add-service { display: flex; gap: 6px; margin-top: 10px; }
+  .add-service select {
+    flex: 1;
+    background: #2a2420;
+    border: 1px solid rgba(160,132,92,0.2);
+    border-radius: 4px;
+    padding: 7px 8px;
+    color: var(--linen);
+    font-family: 'Commissioner', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    outline: none;
+  }
+  .add-service select option { background: #2a2420; color: var(--linen); }
+
+  .btn-add-svc { background: var(--cognac); border: none; border-radius: 4px; color: #fff; font-size: 18px; width: 32px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+  .btn-add-svc:hover { background: var(--leather); }
+
+  .btn-calculate { margin-top: 12px; width: 100%; background: none; border: 1px solid var(--cognac); border-radius: 4px; color: var(--cognac); font-family: 'Commissioner', sans-serif; font-size: 11px; font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; padding: 9px; cursor: pointer; transition: all 0.2s; }
+  .btn-calculate:hover { background: var(--cognac); color: #fff; }
+
+  .add-item-btn {
+    margin: 4px 32px 4px;
+    background: none;
+    border: 1px dashed var(--cognac-border);
+    border-radius: 6px;
+    color: rgba(160,132,92,0.6);
+    padding: 12px;
+    font-family: 'Commissioner', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    width: calc(100% - 64px);
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .add-item-btn:hover { border-color: var(--cognac); color: var(--cognac); }
+
+  .panel-right { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 48px 40px; overflow-y: auto; }
+  .receipt-wrap { width: 100%; max-width: 480px; }
+  .receipt-actions { display: flex; gap: 10px; margin-bottom: 24px; justify-content: center; }
+  .btn-action {
+    background: none;
+    border: 1px solid var(--cognac-border);
+    border-radius: 4px;
+    color: var(--cognac);
+    font-family: 'Commissioner', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn-action:hover { background: var(--cognac); color: #fff; }
+  .btn-action svg { width: 14px; height: 14px; vertical-align: -2px; margin-right: 6px; }
+
+  #receipt { background: var(--linen); color: var(--dark); border-radius: 8px; padding: 40px 36px; width: 100%; font-family: 'Commissioner', sans-serif; font-weight: 300; }
+  .receipt-header { text-align: center; padding-bottom: 24px; border-bottom: 1px solid rgba(58,50,40,0.15); margin-bottom: 24px; }
+  .receipt-logo { font-family: 'Tenor Sans', serif; font-size: 13px; letter-spacing: 0.25em; color: var(--brown); text-transform: uppercase; margin-bottom: 4px; }
+  .receipt-tagline { font-size: 10px; color: rgba(58,50,40,0.45); letter-spacing: 0.15em; text-transform: uppercase; }
+  .receipt-meta { display: flex; justify-content: space-between; font-size: 11px; color: rgba(58,50,40,0.5); margin-bottom: 20px; }
+  .receipt-client { background: rgba(160,132,92,0.1); border-radius: 5px; padding: 12px 16px; margin-bottom: 24px; font-size: 12px; }
+  .receipt-client-row { display: flex; justify-content: space-between; padding: 3px 0; }
+  .rc-label { color: rgba(58,50,40,0.5); }
+  .rc-value { color: var(--brown); font-weight: 400; }
+  .receipt-items { margin-bottom: 24px; }
+  .receipt-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(58,50,40,0.1); }
+  .receipt-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .receipt-item-title { display: flex; align-items: baseline; margin-bottom: 6px; }
+  .ri-num { font-family: 'Tenor Sans', serif; font-size: 10px; color: var(--cognac); letter-spacing: 0.15em; white-space: nowrap; }
+  .ri-name { font-size: 13px; font-weight: 400; color: var(--dark); margin-left: 10px; }
+  .ri-note { font-size: 11px; color: rgba(58,50,40,0.45); font-style: italic; padding: 0 0 5px 0; }
+  .receipt-service-row { display: flex; justify-content: space-between; font-size: 11px; color: rgba(58,50,40,0.6); padding: 3px 0; }
+  .rs-price { color: var(--brown); font-weight: 400; }
+  .receipt-divider { border: none; border-top: 1px solid rgba(58,50,40,0.2); margin: 20px 0; }
+  .receipt-total-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .rt-label { font-size: 11px; color: rgba(58,50,40,0.5); text-transform: uppercase; letter-spacing: 0.1em; }
+  .rt-amount { font-family: 'Tenor Sans', serif; font-size: 22px; color: var(--dark); }
+  .receipt-note { font-size: 10px; color: rgba(58,50,40,0.4); text-align: center; margin-top: 20px; line-height: 1.6; font-style: italic; }
+  .receipt-footer { text-align: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(58,50,40,0.1); font-size: 9px; color: rgba(58,50,40,0.3); letter-spacing: 0.2em; text-transform: uppercase; }
+  .empty-receipt { text-align: center; padding: 60px 0; color: rgba(58,50,40,0.3); font-size: 12px; }
+  .empty-receipt .icon { font-size: 32px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<div class="panel-left">
+  <div class="logo">
+    <div class="logo-text">REWISE · STUDIO</div>
+    <div class="logo-sub">Попередній кошторис</div>
+  </div>
+
+  <div class="client-block">
+    <div class="block-label">Клієнт</div>
+    <div class="input-row">
+      <div class="field">
+        <label>ІМ'Я</label>
+        <input type="text" id="clientName" placeholder="Необов'язково" oninput="updateReceipt()">
+      </div>
+      <div class="field">
+        <label>ПРИМІТКА</label>
+        <input type="text" id="clientNote" placeholder="Необов'язково" oninput="updateReceipt()">
+      </div>
+    </div>
+  </div>
+
+  <button class="add-item-btn" onclick="addItem()">+ Додати річ</button>
+  <div class="items-scroll" id="itemsList"></div>
+  <button class="add-item-btn" onclick="calculateAll()" style="border-style:solid;border-color:var(--cognac);color:var(--cognac);margin-top:0;margin-bottom:20px;flex-shrink:0;">Розрахунок</button>
+
+</div>
+
+<div class="panel-right">
+  <div class="receipt-wrap">
+    <div class="receipt-actions">
+      <button class="btn-action" onclick="shareEstimate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>Поділитися</button>
+      <button class="btn-action" onclick="saveImage()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Зберегти</button>
+    </div>
+    <div id="receipt">
+      <div class="empty-receipt">
+        <div class="icon">🧾</div>
+        Додайте річ та послуги — тут з'явиться кошторис
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+</script>
+<script>
+
+// ─── ЗАВАНТАЖЕННЯ ПРАЙСУ З GOOGLE SHEETS (gviz, як у CRM) ───────────────
+var SHEET_ID = "1kDJ893PFa_DTNKt-r8wQES_JFXbJSDNU8niRLz70Aao";
+var PRICE_GID = "934403054";
+
+// Відображувані назви категорій
+var CATEGORY_LABELS = { "shoes": "Взуття", "bags": "Сумка" };
+
+// Структура: PRICE = { "shoes": { label, departments: { "Назва відділу": [ {name, price, unit} ] } } }
+var PRICE = {};
+var priceLoaded = false;
+
+function loadPrice() {
+  var url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID +
+            "/gviz/tq?tqx=out:json&gid=" + PRICE_GID;
+  fetch(url)
+    .then(function(r){ return r.text(); })
+    .then(function(txt){
+      // gviz повертає google.visualization.Query.setResponse({...});
+      var json = JSON.parse(txt.substring(txt.indexOf("{"), txt.lastIndexOf("}") + 1));
+      var rows = json.table.rows;
+      PRICE = {};
+      rows.forEach(function(row){
+        var c = row.c;
+        if (!c) return;
+        var category = c[0] && c[0].v ? String(c[0].v).trim() : "";       // A: shoes/bags
+        var deptName = c[2] && c[2].v ? String(c[2].v).trim() : "";        // C: Відділ назва
+        var svcName  = c[3] && c[3].v ? String(c[3].v).trim() : "";        // D: Назва послуги
+        var unit     = c[4] && c[4].v ? String(c[4].v).trim() : "";        // E: Одиниця
+        var price    = c[5] && c[5].v != null ? parseInt(c[5].v) : 0;      // F: Ціна
+        if (!category || !deptName || !svcName) return;
+        if (!PRICE[category]) {
+          PRICE[category] = { label: CATEGORY_LABELS[category] || category, departments: {} };
+        }
+        if (!PRICE[category].departments[deptName]) {
+          PRICE[category].departments[deptName] = [];
+        }
+        PRICE[category].departments[deptName].push({ name: svcName, price: price, unit: unit });
+      });
+      priceLoaded = true;
+      renderItems();
+      // Якщо ще нема жодної речі — додаємо першу
+      if (items.length === 0) addItem();
+    })
+    .catch(function(err){
+      var container = document.getElementById("itemsList");
+      container.innerHTML = '<div style="color:rgba(240,235,227,0.5);font-size:12px;padding:20px;text-align:center;">Не вдалося завантажити прайс.<br>Перевірте доступ до таблиці.</div>';
+      console.error("Price load error:", err);
+    });
+}
+
+let items = [];
+let itemCounter = 0;
+
+function firstCategory() {
+  var keys = Object.keys(PRICE);
+  return keys.length ? keys[0] : "";
+}
+
+function firstDepartment(cat) {
+  if (!PRICE[cat]) return "";
+  var keys = Object.keys(PRICE[cat].departments);
+  return keys.length ? keys[0] : "";
+}
+
+function addItem() {
+  if (!priceLoaded) return;
+  itemCounter++;
+  var cat = firstCategory();
+  items.push({
+    id: itemCounter,
+    category: cat,
+    department: firstDepartment(cat),
+    note: "",
+    services: []
+  });
+  renderItems();
+  updateReceipt();
+}
+
+function removeItem(id) {
+  items = items.filter(i => i.id !== id);
+  renderItems();
+  updateReceipt();
+}
+
+function changeCategory(id, val) {
+  const item = items.find(i => i.id === id);
+  item.category = val;
+  item.department = firstDepartment(val);
+  renderItems();
+  updateReceipt();
+}
+
+function changeDepartment(id, val) {
+  const item = items.find(i => i.id === id);
+  item.department = val;
+  renderItems();
+  updateReceipt();
+}
+
+function updateNote(id, val) {
+  const item = items.find(i => i.id === id);
+  item.note = val;
+  updateReceipt();
+}
+
+function addService(id) {
+  const sel = document.getElementById("svc-select-" + id);
+  if (!sel.value) return;
+  const parts = sel.value.split("|");
+  const item = items.find(i => i.id === id);
+  item.services.push({ name: parts[0], price: parseInt(parts[1]) });
+  sel.value = "";
+  renderItems();
+  updateReceipt();
+}
+
+function removeService(itemId, svcIdx) {
+  const item = items.find(i => i.id === itemId);
+  item.services.splice(svcIdx, 1);
+  renderItems();
+  updateReceipt();
+}
+
+function renderItems() {
+  const container = document.getElementById("itemsList");
+  container.innerHTML = "";
+
+  items.forEach((item, idx) => {
+    const catData = PRICE[item.category];
+    if (!catData) return;
+    const div = document.createElement("div");
+    div.className = "item-card";
+
+    // Категорії (Виріб)
+    const catOptions = Object.keys(PRICE).map(k =>
+      '<option value="' + k + '"' + (k === item.category ? ' selected' : '') + '>' + PRICE[k].label + '</option>'
+    ).join("");
+
+    // Відділи для обраної категорії
+    const deptKeys = Object.keys(catData.departments);
+    const deptOptions = deptKeys.map(d =>
+      '<option value="' + d + '"' + (d === item.department ? ' selected' : '') + '>' + d + '</option>'
+    ).join("");
+
+    // Послуги обраного відділу
+    const deptServices = catData.departments[item.department] || [];
+    const availSvcs = deptServices.map(s =>
+      '<option value="' + s.name + '|' + s.price + '">' + s.name + ' — ' + s.price + ' ₴</option>'
+    ).join("");
+
+    // Вже додані послуги
+    const svcRows = item.services.map((s, si) =>
+      '<div class="service-row">'
+      + '<span class="service-name">' + s.name + '</span>'
+      + '<span class="service-price">' + s.price + ' ₴</span>'
+      + '<button class="service-del" onclick="removeService(' + item.id + ',' + si + ')">×</button>'
+      + '</div>'
+    ).join("");
+
+    const noteVal = item.note.replace(/"/g, '&quot;');
+
+    div.innerHTML =
+      '<div class="item-header">'
+        + '<span class="item-num">№' + (idx + 1) + '</span>'
+        + '<button class="item-remove" onclick="removeItem(' + item.id + ')">×</button>'
+      + '</div>'
+      + '<div class="item-row">'
+        + '<div class="field"><label>ВИРІБ</label>'
+          + '<select onchange="changeCategory(' + item.id + ', this.value)">' + catOptions + '</select>'
+        + '</div>'
+      + '</div>'
+      + '<div class="item-row">'
+        + '<div class="field"><label>ВІДДІЛ</label>'
+          + '<select onchange="changeDepartment(' + item.id + ', this.value)">' + deptOptions + '</select>'
+        + '</div>'
+      + '</div>'
+      + '<div class="item-note">'
+        + '<div class="field"><label>УТОЧНЕННЯ</label>'
+          + '<input type="text" placeholder="Необов\'язково" value="' + noteVal + '" oninput="updateNote(' + item.id + ', this.value)">'
+        + '</div>'
+      + '</div>'
+      + '<div class="services-list">' + svcRows + '</div>'
+      + '<div class="add-service">'
+        + '<select id="svc-select-' + item.id + '">'
+          + '<option value="">— обрати послугу —</option>'
+          + availSvcs
+        + '</select>'
+        + '<button class="btn-add-svc" onclick="addService(' + item.id + ')">+</button>'
+      + '</div>';
+
+    container.appendChild(div);
+  });
+}
+
+function calculateAll() {
+  // Забираем выбранную услугу из каждой карточки и добавляем
+  items.forEach(function(item) {
+    var sel = document.getElementById("svc-select-" + item.id);
+    if (sel && sel.value) {
+      var parts = sel.value.split("|");
+      item.services.push({name: parts[0], price: parseInt(parts[1])});
+      sel.value = "";
+    }
+  });
+  renderItems();
+  updateReceipt();
+}
+
+function updateReceipt() {
+  const receipt = document.getElementById("receipt");
+  const clientName = document.getElementById("clientName").value.trim();
+  const clientNote = document.getElementById("clientNote").value.trim();
+  const hasItems = items.length > 0;
+
+  if (!hasItems) {
+    receipt.innerHTML = '<div class="empty-receipt"><div class="icon">🧾</div>Додайте річ та послуги — тут з\'явиться кошторис</div>';
+    return;
+  }
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("uk-UA", {day:"2-digit",month:"2-digit",year:"numeric"});
+  const timeStr = now.toLocaleTimeString("uk-UA", {hour:"2-digit",minute:"2-digit"});
+
+  let total = 0;
+  let itemsHTML = "";
+
+  items.forEach((item, idx) => {
+    if (item.services.length === 0) return;
+    item.services.forEach(s => total += s.price);
+
+    const svcsHTML = item.services.map(s =>
+      '<div class="receipt-service-row"><span>' + s.name + '</span><span class="rs-price">' + s.price + ' ₴</span></div>'
+    ).join("");
+
+    const noteHTML = item.note ? '<div class="ri-note">' + item.note + '</div>' : "";
+
+    itemsHTML +=
+      '<div class="receipt-item">'
+        + '<div class="receipt-item-title">'
+          + '<span class="ri-num">№' + (idx + 1) + '</span>'
+          + '<span class="ri-name">' + item.category + ' · ' + item.subtype + '</span>'
+        + '</div>'
+        + noteHTML
+        + svcsHTML
+      + '</div>';
+  });
+
+  let clientHTML = "";
+  if (clientName || clientNote) {
+    clientHTML = '<div class="receipt-client">';
+    if (clientName) clientHTML += '<div class="receipt-client-row"><span class="rc-label">Клієнт</span><span class="rc-value">' + clientName + '</span></div>';
+    if (clientNote) clientHTML += '<div class="receipt-client-row"><span class="rc-label">Примітка</span><span class="rc-value">' + clientNote + '</span></div>';
+    clientHTML += '</div>';
+  }
+
+  receipt.innerHTML =
+    '<div class="receipt-header">'
+      + '<div class="receipt-logo">REWISE · STUDIO</div>'
+      + '<div class="receipt-tagline">Попередній кошторис</div>'
+    + '</div>'
+    + '<div class="receipt-meta"><span>' + dateStr + ', ' + timeStr + '</span></div>'
+    + clientHTML
+    + '<div class="receipt-items">' + itemsHTML + '</div>'
+    + (total > 0 ? '<hr class="receipt-divider">'
+      + '<div class="receipt-total-row">'
+        + '<span class="rt-label">Разом</span>'
+        + '<span class="rt-amount">' + total + ' ₴</span>'
+      + '</div>'
+      + '<p class="receipt-note">Остаточна вартість узгоджується після огляду виробу.<br>Кошторис дійсний протягом 7 днів.</p>' : '')
+    + '<div class="receipt-footer">rewise-studio · ukraine</div>';
+}
+
+function buildTextEstimate() {
+  const clientName = document.getElementById("clientName").value.trim();
+  const clientNote = document.getElementById("clientNote").value.trim();
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("uk-UA");
+  let lines = ["📋 REWISE STUDIO — Попередній кошторис", ""];
+  if (clientName) lines.push("👤 " + clientName);
+  if (clientNote) lines.push("📝 " + clientNote);
+  if (clientName || clientNote) lines.push("");
+  lines.push("📅 " + dateStr);
+  lines.push("");
+  let total = 0;
+  items.forEach((item, idx) => {
+    if (item.services.length === 0) return;
+    let line = "№" + (idx + 1) + " — " + item.category + " (" + item.subtype + ")";
+    if (item.note) line += " · " + item.note;
+    lines.push(line);
+    item.services.forEach(s => {
+      lines.push("  • " + s.name + " — " + s.price + " ₴");
+      total += s.price;
+    });
+    lines.push("");
+  });
+  if (total > 0) {
+    lines.push("💰 Разом: " + total + " ₴");
+    lines.push("");
+    lines.push("Остаточна вартість узгоджується після огляду виробу.");
+  }
+  lines.push("Rewise Studio");
+  return lines.join("\n");
+}
+
+function shareEstimate() {
+  const text = buildTextEstimate();
+  if (navigator.share) {
+    navigator.share({ text: text }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelectorAll(".btn-action")[0];
+      const orig = btn.innerHTML;
+      btn.textContent = "Скопійовано ✓";
+      setTimeout(() => btn.innerHTML = orig, 2000);
+    });
+  }
+}
+
+function copyText() {
+  const clientName = document.getElementById("clientName").value.trim();
+  const clientNote = document.getElementById("clientNote").value.trim();
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("uk-UA");
+  let lines = ["📋 REWISE STUDIO — Попередній кошторис", ""];
+  if (clientName) lines.push("👤 " + clientName);
+  if (clientNote) lines.push("📝 " + clientNote);
+  if (clientName || clientNote) lines.push("");
+  lines.push("📅 " + dateStr);
+  lines.push("");
+  let total = 0;
+  items.forEach((item, idx) => {
+    if (item.services.length === 0) return;
+    let line = "№" + (idx + 1) + " — " + item.category + " (" + item.subtype + ")";
+    if (item.note) line += " · " + item.note;
+    lines.push(line);
+    item.services.forEach(s => {
+      lines.push("  • " + s.name + " — " + s.price + " ₴");
+      total += s.price;
+    });
+    lines.push("");
+  });
+  lines.push("💰 Разом: " + total + " ₴");
+  lines.push("");
+  lines.push("Остаточна вартість узгоджується після огляду виробу.");
+  lines.push("Rewise Studio");
+  navigator.clipboard.writeText(lines.join("\n")).then(() => {
+    const btn = document.querySelectorAll(".btn-action")[0];
+    const orig = btn.textContent;
+    btn.textContent = "Скопійовано ✓";
+    setTimeout(() => btn.textContent = orig, 2000);
+  });
+}
+
+function saveImage() {
+  html2canvas(document.getElementById("receipt"), {
+    backgroundColor: "#F0EBE3",
+    scale: 2,
+    useCORS: true
+  }).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "rewise-estimate-" + Date.now() + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+}
+
+
+// Старт: завантажуємо прайс при відкритті
+loadPrice();
+
+</script>
+</body>
+</html>
