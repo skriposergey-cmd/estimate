@@ -107,9 +107,10 @@
   .service-del { background: none; border: none; color: rgba(240,235,227,0.2); cursor: pointer; font-size: 14px; padding: 0; transition: color 0.2s; }
   .service-del:hover { color: #c0735a; }
 
-  .add-service { display: flex; gap: 6px; margin-top: 10px; }
+  .add-service { display: flex; gap: 6px; margin-top: 10px; width: 100%; }
   .add-service select {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     background: #2a2420;
     border: 1px solid rgba(160,132,92,0.2);
     border-radius: 4px;
